@@ -1,12 +1,16 @@
 function myMap()
 {
-    let mapProp=
-    {
-        center:new google.maps.LatLng(51.508742,-0.120850),
-        zoom:10,
-    };
-    window.bigMap=new google.maps.Map(document.getElementById("googleMap"),mapProp);
     getLocation();
+    navigator.geolocation.getCurrentPosition(function(position)
+    {
+        let mapProp=
+            {
+                center:new google.maps.LatLng(position.coords.latitude,position.coords.longitude),
+                zoom:10,
+            };
+        window.bigMap=new google.maps.Map(document.getElementById("googleMap"),mapProp);
+
+    });
 }
 function getLocation()
 {
@@ -24,15 +28,36 @@ function showPosition(position) {
 }
 
 
-function mapDirection(x,y)
+function mapDirection(destination)
 {
+    let directionsDisplay = new google.maps.DirectionsRenderer();
+    directionsDisplay.setMap(map);
+
     navigator.geolocation.getCurrentPosition(function(position)
     {
         let pos= {
             lat: position.coords.latitude,
             lng: position.coords.longitude
         };
-        let DirectionService.route();
+
+        let request={
+            origin:{
+                lat: position.coords.latitude,
+                lng: position.coords.longitude
+            },
+            destination: destination,
+
+            travelMode:'DRIVING'
+        }
+
+        let router=new DirectionsService();
+
+        router.route(request,function(response,status){
+            if (status == 'OK') {
+                window.alert("A");
+                directionsDisplay.setDirections(response);
+            }
+        });
     });
 }
 
